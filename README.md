@@ -7,7 +7,7 @@ Semaphore Messenger Transport
 [![License](https://poser.pugx.org/coka/semaphore-messenger/license)](https://packagist.org/packages/coka/semaphore-messenger)
 [![Monthly Downloads](https://poser.pugx.org/coka/semaphore-messenger/d/monthly)](https://packagist.org/packages/coka/semaphore-messenger)
 [![Daily Downloads](https://poser.pugx.org/coka/semaphore-messenger/d/daily)](https://packagist.org/packages/coka/semaphore-messenger)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/46305805-2ecf-45f2-a070-0120edb47ccf/mini.png)](https://insight.sensiolabs.com/projects/46305805-2ecf-45f2-a070-0120edb47ccf)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8b4592a7-61ca-40ac-b4f1-e14818ec5d7e/mini.png)](https://insight.sensiolabs.com/projects/8b4592a7-61ca-40ac-b4f1-e14818ec5d7e)
 [![Travis CI](https://travis-ci.org/CedrickOka/rest-request-validator-bundle.svg?branch=master)](https://travis-ci.org/CedrickOka/rest-request-validator-bundle)
 
 The Semaphore Transport allows you to send and receive messages on System V message queues. The semaphore transport configuration looks like this :
