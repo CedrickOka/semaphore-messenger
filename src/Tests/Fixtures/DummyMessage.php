@@ -1,5 +1,4 @@
 <?php
-
 namespace Oka\Messenger\Transport\Semaphore\Tests\Fixtures;
 
 class DummyMessage
