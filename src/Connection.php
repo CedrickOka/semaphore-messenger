@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore;
 
 use Oka\Messenger\Transport\Semaphore\Exception\SemaphoreException;
@@ -39,10 +40,10 @@ class Connection
         $this->configuration = array_replace_recursive(self::DEFAULT_OPTIONS, $configuration);
         $this->setup = false;
 
-        $this->configuration['message_max_size'] = (int) $this->configuration['message_max_size'];
+        $this->configuration['message_max_size'] = (int)$this->configuration['message_max_size'];
 
         if (true === isset($this->configuration['message_type'])) {
-            $this->configuration['message_type'] = (int) $this->configuration['message_type'];
+            $this->configuration['message_type'] = (int)$this->configuration['message_type'];
         }
     }
 
@@ -56,6 +57,11 @@ class Connection
      *   * message_type: The type of message to send (Default: 1)
      *   * message_max_size: The maximum size of a message if the message is larger than this size, an exception will be thrown (Default: 131072)
      *   * auto_setup: Enable or not the auto-setup of queue (Default: true)
+     *
+     * @param string $dsn
+     * @param array $options
+     *
+     * @return Connection
      */
     public static function fromDsn(string $dsn, array $options = []): self
     {
@@ -69,9 +75,13 @@ class Connection
         $parsedQuery = [];
         parse_str($parsedUrl['query'] ?? '', $parsedQuery);
 
-        $queueOptions = array_replace_recursive([
-            'path' => $parsedUrl['path'],
-        ], $options, $parsedQuery);
+        $queueOptions = array_replace_recursive(
+            [
+                'path' => $parsedUrl['path'],
+            ],
+            $options,
+            $parsedQuery
+        );
 
         return new self($queueOptions);
     }
@@ -84,21 +94,32 @@ class Connection
     /**
      * Send message on semaphore queue.
      *
-     * @param SemaphoreStamp $semaphoreStamp
+     * @param string $body
+     * @param array $headers
+     * @param int $delay
+     * @param SemaphoreStamp|null $semaphoreStamp
      *
-     * @throws SemaphoreException
      */
     public function send(string $body, array $headers = [], int $delay = 0, SemaphoreStamp $semaphoreStamp = null): void
     {
-        $messageType = null !== $semaphoreStamp ? $semaphoreStamp->getType() : ($this->configuration['message_type'] ?? 1);
+        $messageType = null !== $semaphoreStamp
+            ? $semaphoreStamp->getType()
+            : ($this->configuration['message_type'] ?? 1);
         $message = json_encode(['body' => $body, 'headers' => $headers]);
 
         if ($this->configuration['message_max_size'] < \strlen($message)) {
-            throw new SemaphoreException(sprintf('The semaphore message is too long to be sent, the maximum size accepted is %s bytes.', $this->configuration['message_max_size']));
+            throw new SemaphoreException(
+                sprintf(
+                    'The semaphore message is too long to be sent, the maximum size accepted is %s bytes.',
+                    $this->configuration['message_max_size']
+                )
+            );
         }
 
         if (false === msg_send($this->getQueue(), $messageType, $message, false, false, $errorCode)) {
-            throw new SemaphoreException(sprintf('Semaphore sending message failed with error code : "%s".', $errorCode));
+            throw new SemaphoreException(
+                sprintf('Semaphore sending message failed with error code : "%s".', $errorCode)
+            );
         }
     }
 
@@ -109,14 +130,25 @@ class Connection
      */
     public function get(): ?SemaphoreEnvelope
     {
-        if (true === msg_receive($this->getQueue(), $this->configuration['message_type'] ?? 0, $messageType, $this->configuration['message_max_size'], $message, false, MSG_IPC_NOWAIT, $errorCode)) {
+        if (true === msg_receive(
+                $this->getQueue(),
+                $this->configuration['message_type'] ?? 0,
+                $messageType,
+                $this->configuration['message_max_size'],
+                $message,
+                false,
+                MSG_IPC_NOWAIT,
+                $errorCode
+            )) {
             $message = json_decode($message, true);
 
             return new SemaphoreEnvelope($messageType, $message['body'], $message['headers']);
         }
 
         if (MSG_ENOMSG !== $errorCode) {
-            throw new SemaphoreException(sprintf('Semaphore receiving message failed with error code : "%s".', $errorCode));
+            throw new SemaphoreException(
+                sprintf('Semaphore receiving message failed with error code : "%s".', $errorCode)
+            );
         }
 
         return null;
