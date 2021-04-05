@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore\Tests;
 
 use Oka\Messenger\Transport\Semaphore\Connection;
@@ -20,22 +21,22 @@ class SemaphoreTransportTest extends TestCase
         parent::setUp();
 
         if (false === \extension_loaded('sysvmsg')) {
-            $this->markTestSkipped('Semaphore extension (sysvmsg) is required.');
+            self::markTestSkipped('Semaphore extension (sysvmsg) is required.');
         }
     }
 
-    public function testItIsATransport()
+    public function testItIsATransport(): void
     {
         $transport = $this->getTransport();
 
-        $this->assertInstanceOf(TransportInterface::class, $transport);
+        self::assertInstanceOf(TransportInterface::class, $transport);
     }
 
-    public function testReceivesMessages()
+    public function testReceivesMessages(): void
     {
         $transport = $this->getTransport(
-                $serializer = $this->createMock(SerializerInterface::class),
-                $connection = $this->createMock(Connection::class)
+            $serializer = $this->createMock(SerializerInterface::class),
+            $connection = $this->createMock(Connection::class)
         );
 
         $decodedMessage = new DummyMessage('Decoded.');
@@ -44,17 +45,20 @@ class SemaphoreTransportTest extends TestCase
         $semaphoreEnvelope->method('getBody')->willReturn('body');
         $semaphoreEnvelope->method('getHeaders')->willReturn(['my' => 'header']);
 
-        $serializer->method('decode')->with(['body' => 'body', 'headers' => ['my' => 'header']])->willReturn(new Envelope($decodedMessage));
+        $serializer->method('decode')->with(['body' => 'body', 'headers' => ['my' => 'header']])->willReturn(
+            new Envelope($decodedMessage)
+        );
         $connection->method('get')->willReturn($semaphoreEnvelope);
 
-        $envelopes = $transport->get();
         $envelopes = iterator_to_array($transport->get());
 
-        $this->assertSame($decodedMessage, $envelopes[0]->getMessage());
+        self::assertSame($decodedMessage, $envelopes[0]->getMessage());
     }
 
-    private function getTransport(SerializerInterface $serializer = null, Connection $connection = null): SemaphoreTransport
-    {
+    private function getTransport(
+        SerializerInterface $serializer = null,
+        Connection $connection = null
+    ): SemaphoreTransport {
         $serializer = $serializer ?: $this->createMock(SerializerInterface::class);
         $connection = $connection ?: $this->createMock(Connection::class);
 
