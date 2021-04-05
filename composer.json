@@ -1,46 +1,48 @@
 {
-	"name" : "coka/semaphore-messenger",
-	"type" : "library",
-	"description" : "The Semaphore Transport allows you to send and receive messages on System V message queues.",
-	"license" : "MIT",
-	"authors" : [{
-			"name" : "Cedrick Oka Baidai",
-			"email" : "okacedrick@gmail.com"
-		}
-	],
-	"require" : {
-		"php" : ">=7.2",
-		"ext-sysvmsg": "*",
-		"symfony/messenger": "^4.4"
-	},
-	"require-dev" : {
-		"symfony/framework-bundle": "^4.4",
-		"symfony/phpunit-bridge": "^4.4",
-		"symfony/property-access": "^4.4",
-		"symfony/serializer": "^4.4"
-	},
-	"config" : {
-		"sort-packages" : true
-	},
-	"autoload" : {
-		"psr-4" : {
-			"Oka\\Messenger\\Transport\\Semaphore\\" : "src"
-		},
-		"exclude-from-classmap" : [
-			"/src/Tests/"
-		]
-	},
-	"autoload-dev" : {
-		"psr-4" : {
-			"Oka\\Messenger\\Transport\\Semaphore\\Tests\\" : "src/Tests/"
-		}
-	},
-	"extra" : {
-		"branch-alias" : {
-			"dev-master" : "0.x.x-dev"
-		},
-		"symfony" : {
-			"allow-contrib" : "true"
-		}
-	}
+    "name": "coka/semaphore-messenger",
+    "type": "library",
+    "description": "The Semaphore Transport allows you to send and receive messages on System V message queues.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cedrick Oka Baidai",
+            "email": "okacedrick@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
+        "ext-sysvmsg": "*",
+        "symfony/messenger": "^4.4|^5.2"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "^4.4|^5.2",
+        "symfony/phpunit-bridge": "^4.4|^5.2",
+        "symfony/property-access": "^4.4|^5.2",
+        "symfony/serializer": "^4.4|^5.2"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Oka\\Messenger\\Transport\\Semaphore\\": "src/"
+        },
+        "exclude-from-classmap": [
+            "tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Oka\\Messenger\\Transport\\Semaphore\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.x.x-dev"
+        },
+        "symfony": {
+            "allow-contrib": "true"
+        }
+    }
 }

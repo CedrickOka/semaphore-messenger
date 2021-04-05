@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore;
 
 use Symfony\Component\Messenger\Transport\TransportFactoryInterface;

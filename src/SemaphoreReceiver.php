@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore;
 
 use Symfony\Component\Messenger\Envelope;
@@ -37,13 +38,14 @@ class SemaphoreReceiver implements ReceiverInterface
         }
 
         try {
-            $envelope = $this->serializer->decode([
-                'body' => $semaphoreEnvelope->getBody(),
-                'headers' => $semaphoreEnvelope->getHeaders(),
-            ]);
+            $envelope = $this->serializer->decode(
+                [
+                    'body' => $semaphoreEnvelope->getBody(),
+                    'headers' => $semaphoreEnvelope->getHeaders(),
+                ]
+            );
         } catch (MessageDecodingFailedException $exception) {
-            // TODO: [Researh] Implements nack strategy for semaphore
-
+            // TODO: [Research] Implements nack strategy for semaphore
             throw $exception;
         }
 

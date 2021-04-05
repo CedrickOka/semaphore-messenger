@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore\Tests;
 
 use Oka\Messenger\Transport\Semaphore\Connection;
@@ -21,11 +22,11 @@ class SemaphoreReceiverTest extends TestCase
         parent::setUp();
 
         if (false === \extension_loaded('sysvmsg')) {
-            $this->markTestSkipped('Semaphore extension (sysvmsg) is required.');
+            self::markTestSkipped('Semaphore extension (sysvmsg) is required.');
         }
     }
 
-    public function testItReturnsTheDecodedMessageToTheHandler()
+    public function testItReturnsTheDecodedMessageToTheHandler(): void
     {
         $serializer = new Serializer(
             new SerializerComponent\Serializer([new ObjectNormalizer()], ['json' => new JsonEncoder()])
@@ -38,17 +39,19 @@ class SemaphoreReceiverTest extends TestCase
         $receiver = new SemaphoreReceiver($connection, $serializer);
         $actualEnvelopes = iterator_to_array($receiver->get());
 
-        $this->assertCount(1, $actualEnvelopes);
-        $this->assertEquals(new DummyMessage('Hi'), $actualEnvelopes[0]->getMessage());
+        self::assertCount(1, $actualEnvelopes);
+        self::assertEquals(new DummyMessage('Hi'), $actualEnvelopes[0]->getMessage());
     }
 
     private function createSemaphoreEnvelope(): SemaphoreEnvelope
     {
         $envelope = $this->getMockBuilder(SemaphoreEnvelope::class)->disableOriginalConstructor()->getMock();
         $envelope->method('getBody')->willReturn('{"message": "Hi"}');
-        $envelope->method('getHeaders')->willReturn([
-            'type' => DummyMessage::class,
-        ]);
+        $envelope->method('getHeaders')->willReturn(
+            [
+                'type' => DummyMessage::class,
+            ]
+        );
 
         return $envelope;
     }

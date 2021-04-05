@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore\Tests;
 
 use Oka\Messenger\Transport\Semaphore\Connection;
@@ -17,26 +18,32 @@ class SemaphoreTransportFactoryTest extends TestCase
         parent::setUp();
 
         if (false === \extension_loaded('sysvmsg')) {
-            $this->markTestSkipped('Semaphore extension (sysvmsg) is required.');
+            self::markTestSkipped('Semaphore extension (sysvmsg) is required.');
         }
     }
 
-    public function testSupportsOnlySemaphoreTransports()
+    public function testSupportsOnlySemaphoreTransports(): void
     {
         $factory = new SemaphoreTransportFactory();
 
-        $this->assertTrue($factory->supports('semaphore://localhost', []));
-        $this->assertFalse($factory->supports('sqs://localhost', []));
-        $this->assertFalse($factory->supports('invalid-dsn', []));
+        self::assertTrue($factory->supports('semaphore://localhost', []));
+        self::assertFalse($factory->supports('sqs://localhost', []));
+        self::assertFalse($factory->supports('invalid-dsn', []));
     }
 
-    public function testItCreatesTheTransport()
+    public function testItCreatesTheTransport(): void
     {
         $factory = new SemaphoreTransportFactory();
         $serializer = $this->createMock(SerializerInterface::class);
 
-        $expectedTransport = new SemaphoreTransport(Connection::fromDsn('semaphore:///.env', ['foo' => 'bar']), $serializer);
+        $expectedTransport = new SemaphoreTransport(
+            Connection::fromDsn('semaphore:///.env', ['foo' => 'bar']),
+            $serializer
+        );
 
-        $this->assertEquals($expectedTransport, $factory->createTransport('semaphore:///.env', ['foo' => 'bar'], $serializer));
+        self::assertEquals(
+            $expectedTransport,
+            $factory->createTransport('semaphore:///.env', ['foo' => 'bar'], $serializer)
+        );
     }
 }

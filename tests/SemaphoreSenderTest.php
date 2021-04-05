@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore\Tests;
 
 use Oka\Messenger\Transport\Semaphore\Connection;
@@ -21,11 +22,11 @@ class SemaphoreSenderTest extends TestCase
         parent::setUp();
 
         if (false === \extension_loaded('sysvmsg')) {
-            $this->markTestSkipped('Semaphore extension (sysvmsg) is required.');
+            self::markTestSkipped('Semaphore extension (sysvmsg) is required.');
         }
     }
 
-    public function testItSendsTheEncodedMessage()
+    public function testItSendsTheEncodedMessage(): void
     {
         $envelope = new Envelope(new DummyMessage('Oy'));
         $encoded = ['body' => '...', 'headers' => ['type' => DummyMessage::class]];
@@ -34,13 +35,13 @@ class SemaphoreSenderTest extends TestCase
         $serializer->method('encode')->with($envelope)->willReturnOnConsecutiveCalls($encoded);
 
         $connection = $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock();
-        $connection->expects($this->once())->method('send')->with($encoded['body'], $encoded['headers']);
+        $connection->expects(self::once())->method('send')->with($encoded['body'], $encoded['headers']);
 
         $sender = new SemaphoreSender($connection, $serializer);
         $sender->send($envelope);
     }
 
-    public function testItSendsTheEncodedMessageUsingAType()
+    public function testItSendsTheEncodedMessageUsingAType(): void
     {
         $envelope = (new Envelope(new DummyMessage('Oy')))->with($stamp = new SemaphoreStamp(1));
         $encoded = ['body' => '...', 'headers' => ['type' => DummyMessage::class]];
@@ -49,13 +50,13 @@ class SemaphoreSenderTest extends TestCase
         $serializer->method('encode')->with($envelope)->willReturn($encoded);
 
         $connection = $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock();
-        $connection->expects($this->once())->method('send')->with($encoded['body'], $encoded['headers'], 0, $stamp);
+        $connection->expects(self::once())->method('send')->with($encoded['body'], $encoded['headers'], 0, $stamp);
 
         $sender = new SemaphoreSender($connection, $serializer);
         $sender->send($envelope);
     }
 
-    public function testItSendsTheEncodedMessageWithoutHeaders()
+    public function testItSendsTheEncodedMessageWithoutHeaders(): void
     {
         $envelope = new Envelope(new DummyMessage('Oy'));
         $encoded = ['body' => '...'];
@@ -64,13 +65,13 @@ class SemaphoreSenderTest extends TestCase
         $serializer->method('encode')->with($envelope)->willReturnOnConsecutiveCalls($encoded);
 
         $connection = $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock();
-        $connection->expects($this->once())->method('send')->with($encoded['body'], []);
+        $connection->expects(self::once())->method('send')->with($encoded['body'], []);
 
         $sender = new SemaphoreSender($connection, $serializer);
         $sender->send($envelope);
     }
 
-    public function testItThrowsATransportExceptionIfItCannotSendTheMessage()
+    public function testItThrowsATransportExceptionIfItCannotSendTheMessage(): void
     {
         $this->expectException(TransportException::class);
         $envelope = new Envelope(new DummyMessage('Oy'));
@@ -80,7 +81,9 @@ class SemaphoreSenderTest extends TestCase
         $serializer->method('encode')->with($envelope)->willReturnOnConsecutiveCalls($encoded);
 
         $connection = $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock();
-        $connection->method('send')->with($encoded['body'], $encoded['headers'])->willThrowException(new SemaphoreException());
+        $connection->method('send')->with($encoded['body'], $encoded['headers'])->willThrowException(
+            new SemaphoreException()
+        );
 
         $sender = new SemaphoreSender($connection, $serializer);
         $sender->send($envelope);

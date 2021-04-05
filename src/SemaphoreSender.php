@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore;
 
 use Symfony\Component\Messenger\Envelope;
@@ -32,7 +33,7 @@ class SemaphoreSender implements SenderInterface
     {
         $encodedMessage = $this->serializer->encode($envelope);
 
-        /** @var \Symfony\Component\Messenger\Stamp\DelayStamp|null $delayStamp */
+        /** @var DelayStamp|null $delayStamp */
         $delayStamp = $envelope->last(DelayStamp::class);
         $delay = null !== $delayStamp ? $delayStamp->getDelay() : 0;
 

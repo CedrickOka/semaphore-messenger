@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -14,52 +15,61 @@ class ConnectionTest extends TestCase
         parent::setUp();
 
         if (false === \extension_loaded('sysvmsg')) {
-            $this->markTestSkipped('Semaphore extension (sysvmsg) is required.');
+            self::markTestSkipped('Semaphore extension (sysvmsg) is required.');
         }
     }
 
-    public function testItCannotBeConstructedWithAWrongDsn()
+    public function testItCannotBeConstructedWithAWrongDsn(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('The given Semaphore Messenger DSN "semaphore://:" is invalid.');
         Connection::fromDsn('semaphore://:');
     }
 
-    public function testItCanBeConstructedWithDefaults()
+    public function testItCanBeConstructedWithDefaults(): void
     {
-        $this->assertEquals(
-                new Connection([
+        self::assertEquals(
+            new Connection(
+                [
                     'path' => '/',
                     'project' => 'M',
                     'message_max_size' => 131072,
-                ]),
-                Connection::fromDsn('semaphore:///')
+                ]
+            ),
+            Connection::fromDsn('semaphore:///')
         );
     }
 
-    public function testOverrideOptionsViaQueryParameters()
+    public function testOverrideOptionsViaQueryParameters(): void
     {
-        $this->assertEquals(
-                new Connection([
+        self::assertEquals(
+            new Connection(
+                [
                     'path' => '/.env',
                     'project' => 'T',
                     'message_max_size' => 1024,
-                ]),
-                Connection::fromDsn('semaphore:///.env?project=T&message_max_size=1024')
+                ]
+            ),
+            Connection::fromDsn('semaphore:///.env?project=T&message_max_size=1024')
         );
     }
 
-    public function testOptionsAreTakenIntoAccountAndOverwrittenByDsn()
+    public function testOptionsAreTakenIntoAccountAndOverwrittenByDsn(): void
     {
-        $this->assertEquals(
-                new Connection([
+        self::assertEquals(
+            new Connection(
+                [
                     'path' => '/.env',
                     'project' => 'T',
                     'message_max_size' => 1024,
-                ]),
-                Connection::fromDsn('semaphore:///.env?project=T&message_max_size=1024', [
+                ]
+            ),
+            Connection::fromDsn(
+                'semaphore:///.env?project=T&message_max_size=1024',
+                [
                     'message_max_size' => 131072,
-                ])
+                ]
+            )
         );
     }
 }

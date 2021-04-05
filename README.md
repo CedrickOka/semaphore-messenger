@@ -29,6 +29,10 @@ message_type | The type of message to send | 1
 message_max_size | The maximum size in bytes of a message if the message is larger than this size, an exception will be thrown | 131072
 auto_setup | Enable or not the auto-setup of queue | true
 
+## Requirements
+
+The Semaphore module together with [`ext-sysvmsg`](https://www.php.net/manual/en/sem.installation.php) must be installed in order for this package to work.
+
 > This extension is not available on Windows platforms.
 
 ## Installation

@@ -1,4 +1,5 @@
 <?php
+
 namespace Oka\Messenger\Transport\Semaphore\Tests;
 
 use Oka\Messenger\Transport\Semaphore\Connection;
@@ -21,7 +22,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 class SemaphoreIntegrationTest extends TestCase
 {
     /**
-     * @var \Oka\Messenger\Transport\Semaphore\Connection
+     * @var Connection
      */
     private $connection;
 
@@ -30,12 +31,12 @@ class SemaphoreIntegrationTest extends TestCase
         parent::setUp();
 
         if (false === \extension_loaded('sysvmsg')) {
-            $this->markTestSkipped('Semaphore extension (sysvmsg) is required.');
+            self::markTestSkipped('Semaphore extension (sysvmsg) is required.');
 
             return;
         }
 
-        $dsn = getenv('MESSENGER_SEMAPHORE_DSN') ?: 'semaphore://'.__FILE__;
+        $dsn = getenv('MESSENGER_SEMAPHORE_DSN') ?: 'semaphore://' . __FILE__;
         $this->connection = Connection::fromDsn($dsn);
     }
 
@@ -48,16 +49,16 @@ class SemaphoreIntegrationTest extends TestCase
         }
     }
 
-    public function testConnectionSendAndGet()
+    public function testConnectionSendAndGet(): void
     {
         $this->connection->send('{"message": "Hi"}', ['type' => DummyMessage::class]);
         $message = $this->connection->get();
 
-        $this->assertEquals('{"message": "Hi"}', $message->getBody());
-        $this->assertEquals(['type' => DummyMessage::class], $message->getHeaders());
+        self::assertEquals('{"message": "Hi"}', $message->getBody());
+        self::assertEquals(['type' => DummyMessage::class], $message->getHeaders());
     }
 
-    public function testItSendsAndReceivesMessages()
+    public function testItSendsAndReceivesMessages(): void
     {
         $serializer = $this->createSerializer();
 
@@ -69,28 +70,28 @@ class SemaphoreIntegrationTest extends TestCase
 
         $envelopes = iterator_to_array($receiver->get());
 
-        $this->assertCount(1, $envelopes);
+        self::assertCount(1, $envelopes);
 
-        /** @var \Symfony\Component\Messenger\Envelope $envelope */
+        /** @var Envelope $envelope */
         $envelope = $envelopes[0];
 
-        $this->assertEquals($first->getMessage(), $envelope->getMessage());
-        $this->assertInstanceOf(SemaphoreStamp::class, $envelope->last(SemaphoreStamp::class));
+        self::assertEquals($first->getMessage(), $envelope->getMessage());
+        self::assertInstanceOf(SemaphoreStamp::class, $envelope->last(SemaphoreStamp::class));
 
         $envelopes = iterator_to_array($receiver->get());
 
-        $this->assertCount(1, $envelopes);
+        self::assertCount(1, $envelopes);
 
-        /** @var \Symfony\Component\Messenger\Envelope $envelope */
+        /** @var Envelope $envelope */
         $envelope = $envelopes[0];
 
-        $this->assertEquals($second->getMessage(), $envelope->getMessage());
-        $this->assertInstanceOf(SemaphoreStamp::class, $envelope->last(SemaphoreStamp::class));
+        self::assertEquals($second->getMessage(), $envelope->getMessage());
+        self::assertInstanceOf(SemaphoreStamp::class, $envelope->last(SemaphoreStamp::class));
 
-        $this->assertEmpty(iterator_to_array($receiver->get()));
+        self::assertEmpty(iterator_to_array($receiver->get()));
     }
 
-    public function testItCountMessages()
+    public function testItCountMessages(): void
     {
         $serializer = $this->createSerializer();
 
@@ -103,13 +104,16 @@ class SemaphoreIntegrationTest extends TestCase
         $sender->send(new Envelope(new DummyMessage('Second')));
         $sender->send(new Envelope(new DummyMessage('Third')));
 
-        $this->assertSame(3, $this->connection->getMessageCount());
+        self::assertSame(3, $this->connection->getMessageCount());
     }
 
     private function createSerializer(): SerializerInterface
     {
         return new Serializer(
-                new SerializerComponent\Serializer([new ObjectNormalizer(), new ArrayDenormalizer()], ['json' => new JsonEncoder()])
+            new SerializerComponent\Serializer(
+                [new ObjectNormalizer(), new ArrayDenormalizer()],
+                ['json' => new JsonEncoder()]
+            )
         );
     }
 }
